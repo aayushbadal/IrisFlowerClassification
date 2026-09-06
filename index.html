@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Iris Flower Classifier</title>
+    <style>
+      body {
+        background-color: white;
+        font-family: Arial, sans-serif;
+        color: black;
+        text-align: center;
+        width: 420px;
+        margin: 40px auto;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+        color: gray;
+        margin-bottom: 20px;
+      }
+
+      .house-icon {
+        width: 120px;
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 5px;
+        text-align: left;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        font-size: 15px;
+        margin-bottom: 15px;
+        border: 1px solid gray;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+
+      select {
+        width: 100%;
+        padding: 10px;
+        font-size: 15px;
+        margin-bottom: 15px;
+        border: 1px solid gray;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        font-size: 15px;
+        background-color: black;
+        color: white;
+        border: none;
+        border-radius: 5px;
+      }
+
+      .error {
+        display: none;
+        color: red;
+        font-size: 13px;
+        text-align: left;
+        margin-bottom: 15px;
+      }
+
+      .result {
+        display: none;
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+      }
+
+      .value {
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      footer {
+        margin-top: 40px;
+        font-size: 12px;
+        color: gray;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Iris Flower Classification</h1>
+    <p class="subtitle">Classify the Iris Flowers using Logistic Regression</p>
+
+    <label for="sepalL">Sepal Length (in Cm)</label>
+    <input type="number" id="sepalL" placeholder="e.g. 5" step="0.1" min="0" />
+
+    <label for="sepalW">Sepal Width(in Cm)</label>
+    <input type="number" id="sepalW" placeholder="e.g. 4" step="0.1" min="0" />
+
+    <label for="petalL">Petal Length (in Cm)</label>
+    <input type="number" id="petalL" placeholder="e.g. 1" step="0.1" min="0" />
+
+    <label for="petalW">Petal Width (in Cm)</label>
+    <input
+      type="number"
+      id="petalW"
+      placeholder="e.g. 0.5"
+      step="0.1"
+      min="0"
+    />
+
+    <div class="error" id="error">
+      Please fill in all fields with valid values.
+    </div>
+
+    <button onclick="classifyFlower()">Classify Iris Flower</button>
+
+    <div class="result" id="result">
+      <p>Predicted Flower</p>
+      <p class="value" id="resultValue">-</p>
+    </div>
+
+    <script>
+      const classes = ["Iris setosa", "Iris versicolor", "Iris virginica"];
+      const coefficient = [
+        [-0.40873449, 0.83860153, -2.30719708, -1.01507286],
+        [0.63277421, -0.34040841, -0.23490762, -0.80994869],
+        [-0.22403972, -0.49819311, 2.54210471, 1.82502156],
+      ];
+      const intercept = [9.28757479, 1.45358263, -10.74115742];
+
+      function softmax(logits) {
+        const maxLogit = Math.max(...logits);
+        const exps = logits.map((val) => Math.exp(val - maxLogit));
+        const sumExps = exps.reduce((a, b) => a + b, 0);
+        return exps.map((val) => val / sumExps);
+      }
+
+      function classifyFlower() {
+        const sepal_length = document.getElementById("sepalL").value;
+        const sepal_width = document.getElementById("sepalW").value;
+        const petal_length = document.getElementById("petalL").value;
+        const petal_width = document.getElementById("petalW").value;
+        const errorBox = document.getElementById("error");
+        const resultBox = document.getElementById("result");
+
+        if (
+          isNaN(sepal_length) ||
+          isNaN(sepal_width) ||
+          isNaN(petal_length) ||
+          isNaN(petal_width)
+        ) {
+          errorBox.style.display = "block";
+          resultBox.style.display = "none";
+          return;
+        }
+
+        errorBox.style.display = "none";
+
+        const logits = coefficient.map((coef, i) => {
+          return (
+            coef[0] * sepal_length +
+            coef[1] * sepal_width +
+            coef[2] * petal_length +
+            coef[3] * petal_width +
+            intercept[i]
+          );
+        });
+
+        const probabilities = softmax(logits);
+        const maxIndex = probabilities.indexOf(Math.max(...probabilities));
+
+        resultValue.textContent = classes[maxIndex];
+        resultBox.style.display = "block";
+      }
+    </script>
+  </body>
+</html>

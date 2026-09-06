@@ -153,6 +153,10 @@
         const resultBox = document.getElementById("result");
 
         if (
+          !sepal_length.trim() ||
+          !sepal_width.trim() ||
+          !petal_length.trim() ||
+          !petal_width.trim() ||
           isNaN(sepal_length) ||
           isNaN(sepal_width) ||
           isNaN(petal_length) ||
